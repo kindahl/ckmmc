@@ -570,6 +570,14 @@ namespace ckmmc
 					case mmc::ckFEATURE_HDDVD_WRITE:
 						features_ |= static_cast<ckcore::tuint64>(1) << ckDEVICE_WRITE_HDDVD;
 						break;
+
+					case mmc::ckFEATURE_MULTIREAD:
+						features_ |= static_cast<ckcore::tuint64>(1) << ckDEVICE_MULTIREAD;
+						break;
+
+					case mmc::ckFEATURE_CD_READ:
+						features_ |= static_cast<ckcore::tuint64>(1) << ckDEVICE_CD_READ;
+						break;
 				}
 
 				bool current = (ptr[2] & 0x01) > 0;

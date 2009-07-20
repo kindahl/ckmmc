@@ -159,6 +159,10 @@ namespace ckmmc
 			ckDEVICE_RCK,
 			ckDEVICE_LSBF,
 
+			// Other features from feature section.
+			ckDEVICE_MULTIREAD,
+			ckDEVICE_CD_READ,
+
 			// Vendor specific.
 			ckDEVICE_AUDIO_MASTER,
 			ckDEVICE_FORCE_SPEED,
