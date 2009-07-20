@@ -18,7 +18,6 @@
 
 #include <ckcore/log.hh>
 #include <ckcore/string.hh>
-#include "ckmmc/device.hh"
 #include "ckmmc/scsidriverselector.hh"
 #include "ckmmc/devicemanager.hh"
 

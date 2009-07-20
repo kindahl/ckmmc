@@ -53,7 +53,8 @@ namespace ckmmc
 		GetVersionEx(&osvi);
 		if (osvi.dwPlatformId == VER_PLATFORM_WIN32_NT && osvi.dwMajorVersion > 4)
 		{
-			static SptiDriver driver;
+			// Use cdrtools compatibility mode.
+			static SptiDriver driver(true);
 			return driver;
 		}
 		else

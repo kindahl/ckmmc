@@ -113,7 +113,21 @@ namespace ckmmc
 			ckDEVICE_WRITE_DVDR,
 			ckDEVICE_WRITE_DVDRAM,
 
+			ckDEVICE_READ_DVDPLUSRW,
+			ckDEVICE_READ_DVDPLUSR,
+			ckDEVICE_READ_DVDPLUSRW_DL,
+			ckDEVICE_READ_DVDPLUSR_DL,
+			ckDEVICE_READ_BD,
+			ckDEVICE_READ_HDDVD,
+			ckDEVICE_WRITE_DVDPLUSRW,
+			ckDEVICE_WRITE_DVDPLUSR,
+			ckDEVICE_WRITE_DVDPLUSRW_DL,
+			ckDEVICE_WRITE_DVDPLUSR_DL,
+			ckDEVICE_WRITE_BD,
+			ckDEVICE_WRITE_HDDVD,
+
 			// Other features.
+			ckDEVICE_METHOD_2,
 			ckDEVICE_TEST_WRITE,
 			ckDEVICE_AUDIO_PLAY,
 			ckDEVICE_COMPOSITE,
@@ -204,16 +218,6 @@ namespace ckmmc
 			ckABL_16 = 0x01,
 			ckABL_24 = 0x02,
 			ckABL_24I2S = 0x03
-		};
-
-		/**
-		 * Defines transport modes.
-		 */
-		enum TransportMode
-		{
-			ckTM_UNSPECIFIED,
-			ckTM_READ,
-			ckTM_WRITE
 		};
 
 		/**

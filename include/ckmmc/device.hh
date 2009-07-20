@@ -23,7 +23,6 @@
 
 #pragma once
 #include <ckcore/types.hh>
-//#include "ckburn/device.hh"
 #include "ckmmc/mmcdevice.hh"
 
 namespace ckmmc

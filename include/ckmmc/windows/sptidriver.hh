@@ -41,13 +41,14 @@ namespace ckmmc
 			ckSPTI_DEFAULT_TIMEOUT = 60
 		};
 
+		bool ctcm_;
 		long timeout_;
 		std::map<ckcore::tchar,HANDLE> handles_;
 
 		HANDLE get_handle(ScsiDevice &device);
 
     public:
-		SptiDriver();
+		SptiDriver(bool ctcm);
         ~SptiDriver();
 
 		static bool find_device_str(ScsiDevice::Address &addr);

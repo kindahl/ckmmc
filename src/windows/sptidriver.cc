@@ -35,8 +35,11 @@ namespace ckmmc
 
     /**
      * Constructs an SptiDriver object.
+	 * @param [in] ctcm Set to true to enable cdrtools compatibility mode.
+	 *					cdrtools uses a non-standard device addressing system.
      */
-	SptiDriver::SptiDriver() : timeout_(ckSPTI_DEFAULT_TIMEOUT)
+	SptiDriver::SptiDriver(bool ctcm) :
+		timeout_(ckSPTI_DEFAULT_TIMEOUT),ctcm_(ctcm)
     {
     }
 
@@ -160,7 +163,47 @@ namespace ckmmc
 		unsigned long dummy;
 		SCSI_ADDRESS scsi_addr;
 
-		ckcore::tchar drive_str[7];
+		ckcore::tchar drive_str[20];
+
+		// Used for cdrtools compatibility sorting.
+		std::vector<ckcore::tuint16> path_ids;
+		std::vector<ckcore::tuint16> port_ids;
+
+		ckcore::tuint16	bus_sort_array[26];
+		ckcore::tuint16 bus_max = 0;
+
+		// Fill the bus sort array if in cdrtools compatibility mode.
+		if (ctcm_)
+		{
+			char inq_buffer[2048];
+
+			for (int i = 0; i < 26; i++)
+			{
+				ckcore::convert::sprintf(drive_str,sizeof(drive_str),
+										 ckT("\\\\.\\SCSI%d:"),i);
+				HANDLE handle = CreateFile(drive_str,GENERIC_READ | GENERIC_WRITE,
+										   FILE_SHARE_READ | FILE_SHARE_WRITE,NULL,
+										   OPEN_EXISTING,0,NULL);
+				if (handle == INVALID_HANDLE_VALUE)
+					break;
+
+				if (DeviceIoControl(handle,IOCTL_SCSI_GET_INQUIRY_DATA,NULL,0,
+									inq_buffer,sizeof(inq_buffer),&dummy,FALSE))
+				{
+					PSCSI_ADAPTER_BUS_INFO abi =
+						reinterpret_cast<PSCSI_ADAPTER_BUS_INFO>(inq_buffer);
+					for (int bus = 0; bus < abi->NumberOfBuses; bus++)
+					{
+						bus_sort_array[bus_max] = ((i << 8) | bus);
+						bus_max++;
+					}
+				}
+
+				CloseHandle(handle);
+			}
+		}
+
+		// Probe all drives through their letters.
 		lstrcpy(drive_str,ckT("\\\\.\\X:"));
 		
 		for (ckcore::tchar drive_letter = 'C'; drive_letter <= 'Z'; drive_letter++)
@@ -188,6 +231,9 @@ namespace ckmmc
 				addr.bus_ = scsi_addr.PortNumber;
 				addr.target_ = scsi_addr.TargetId;
 				addr.lun_ = scsi_addr.Lun;
+
+				path_ids.push_back(scsi_addr.PathId);
+				port_ids.push_back(scsi_addr.PortNumber);
 			}
 			else
 			{
@@ -198,6 +244,9 @@ namespace ckmmc
 					addr.bus_ = drive_letter - 'A';
 					addr.target_ = 0;
 					addr.lun_ = 0;
+
+					path_ids.push_back(0);
+					port_ids.push_back(drive_letter);
 				}
 				else
 				{
@@ -206,6 +255,35 @@ namespace ckmmc
 				}
 			}
 
+			// Update sort array if in cdrtools compatibility mode.
+			if (ctcm_)
+			{
+				ckcore::tuint16 bus_sort_val = (port_ids[port_ids.size() - 1] << 8) |
+												path_ids[path_ids.size() - 1];
+
+				int i;
+				for (i = 0; i < bus_max; i++)
+				{
+					if (bus_sort_val <= bus_sort_array[i])
+						break;
+				}
+
+				if (i == bus_max)
+				{
+					bus_sort_array[i] = bus_sort_val;
+					bus_max++;
+				}
+				else if (bus_sort_val < bus_sort_array[i])
+				{
+					memmove(&bus_sort_array[i + 1],&bus_sort_array[i],
+							(bus_max - i) * sizeof (ckcore::tuint16));
+
+					bus_sort_array[i] = bus_sort_val;
+					bus_max++;
+				}
+			}
+
+			// Add to the address vector.
 			addr.device_.push_back(drive_letter);
 
 			// Remember the handle.
@@ -213,6 +291,22 @@ namespace ckmmc
 
 			// Add the address to the address vector.
 			addresses.push_back(addr);
+		}
+
+		// Finally, update the bus numbers if in cdrtools compatibility mode.
+		if (ctcm_ && bus_max > 0)
+		{
+			for (size_t i = 0; i < addresses.size(); i++)
+			{
+				for (ckcore::tuint16 j = 0; j < bus_max; j++)
+				{
+					if (bus_sort_array[j] == ((port_ids[i] << 8) | path_ids[i]))
+					{
+						addresses[i].bus_ = j;
+						break;
+					}
+				}
+			}
 		}
 
 		return true;

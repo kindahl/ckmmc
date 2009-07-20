@@ -206,6 +206,9 @@ namespace ckmmc
 		if (mode_page_2a.read_cd_rw_)
 			features_ |= static_cast<ckcore::tuint64>(1) << ckDEVICE_READ_CDRW;
 
+		if (mode_page_2a.method_2_)
+			features_ |= static_cast<ckcore::tuint64>(1) << ckDEVICE_METHOD_2;
+
 		if (mode_page_2a.read_dvd_rom_)
 			features_ |= static_cast<ckcore::tuint64>(1) << ckDEVICE_READ_DVDROM;
 
@@ -502,6 +505,85 @@ namespace ckmmc
 				// FIXME: Add a check since not all plextor drives support VARIREC.
 				features_ |= static_cast<ckcore::tuint64>(1) << ckDEVICE_VARIREC;
 			}
+		}
+
+		// Obtain configuration feature set.
+		unsigned char feature_buffer[32 * 1024];
+		memset(feature_buffer,0,sizeof(feature_buffer));
+
+		if (get_configuration(feature_buffer,sizeof(feature_buffer)))
+		{
+			unsigned char *ptr = feature_buffer;
+			unsigned char *ptr_end = &feature_buffer[sizeof(feature_buffer)];
+
+			ptr += 8;	// Skip header.
+			while (ptr < ptr_end)
+			{
+				ckcore::tuint16 feature_code = (static_cast<ckcore::tuint16>(ptr[0]) << 8) | ptr[1];
+
+				switch (feature_code)
+				{
+					case mmc::ckFEATURE_DVDPLUSRW:
+						features_ |= static_cast<ckcore::tuint64>(1) << ckDEVICE_READ_DVDPLUSRW;
+
+						// Warning: This assumes that mode page 2a has been evaluated already.
+						if (support(ckDEVICE_WRITE_DVDR))
+							features_ |= static_cast<ckcore::tuint64>(1) << ckDEVICE_WRITE_DVDPLUSRW;
+						break;
+
+					case mmc::ckFEATURE_DVDPLUSR:
+						features_ |= static_cast<ckcore::tuint64>(1) << ckDEVICE_READ_DVDPLUSR;
+
+						// Warning: This assumes that mode page 2a has been evaluated already.
+						if (support(ckDEVICE_WRITE_DVDR))
+							features_ |= static_cast<ckcore::tuint64>(1) << ckDEVICE_WRITE_DVDPLUSR;
+						break;
+
+					case mmc::ckFEATURE_DVDPLUSRW_DL:
+						features_ |= static_cast<ckcore::tuint64>(1) << ckDEVICE_READ_DVDPLUSRW_DL;
+
+						// Warning: This assumes that mode page 2a has been evaluated already.
+						if (support(ckDEVICE_WRITE_DVDR))
+							features_ |= static_cast<ckcore::tuint64>(1) << ckDEVICE_WRITE_DVDPLUSRW_DL;
+						break;
+
+					case mmc::ckFEATURE_DVDPLUSR_DL:
+						features_ |= static_cast<ckcore::tuint64>(1) << ckDEVICE_READ_DVDPLUSR_DL;
+
+						// Warning: This assumes that mode page 2a has been evaluated already.
+						if (support(ckDEVICE_WRITE_DVDR))
+							features_ |= static_cast<ckcore::tuint64>(1) << ckDEVICE_WRITE_DVDPLUSR_DL;
+						break;
+
+					case mmc::ckFEATURE_BD_READ:
+						features_ |= static_cast<ckcore::tuint64>(1) << ckDEVICE_READ_BD;
+						break;
+
+					case mmc::ckFEATURE_BD_WRITE:
+						features_ |= static_cast<ckcore::tuint64>(1) << ckDEVICE_WRITE_BD;
+						break;
+
+					case mmc::ckFEATURE_HDDVD_READ:
+						features_ |= static_cast<ckcore::tuint64>(1) << ckDEVICE_READ_HDDVD;
+						break;
+
+					case mmc::ckFEATURE_HDDVD_WRITE:
+						features_ |= static_cast<ckcore::tuint64>(1) << ckDEVICE_WRITE_HDDVD;
+						break;
+				}
+
+				bool current = (ptr[2] & 0x01) > 0;
+				bool persist = (ptr[2] & 0x02) > 0;
+				unsigned char version = (ptr[2] >> 2) & 0x0f;
+
+				ptr += ptr[3];
+				ptr += 4;
+			}
+		}
+		else
+		{
+			ckcore::log::print_line(ckT("[mmcdevice]: requesting configuration with buffer size %d failed."),
+									sizeof(feature_buffer));
 		}
 
 		return true;

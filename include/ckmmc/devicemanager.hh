@@ -24,6 +24,7 @@
 #pragma once
 #include <ckcore/types.hh>
 #include <ckcore/process.hh>
+#include "ckmmc/device.hh"
 #include "ckmmc/scsidriver.hh"
 
 namespace ckmmc
