@@ -107,7 +107,7 @@ namespace ckmmc
 		ckcore::tchar drive_str[7];
 		lstrcpy(drive_str,ckT("\\\\.\\X:"));
 		
-		for (ckcore::tchar drive_letter = 'C'; drive_letter <= 'Z'; drive_letter++)
+		for (ckcore::tchar drive_letter = 'A'; drive_letter <= 'Z'; drive_letter++)
 		{
 			// Open the device.
 			drive_str[4] = drive_letter;
@@ -206,7 +206,7 @@ namespace ckmmc
 		// Probe all drives through their letters.
 		lstrcpy(drive_str,ckT("\\\\.\\X:"));
 		
-		for (ckcore::tchar drive_letter = 'C'; drive_letter <= 'Z'; drive_letter++)
+		for (ckcore::tchar drive_letter = 'A'; drive_letter <= 'Z'; drive_letter++)
 		{
 			drive_str[4] = drive_letter;
 
