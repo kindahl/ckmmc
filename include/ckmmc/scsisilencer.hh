@@ -1,6 +1,6 @@
 /*
  * The ckMMC library provides SCSI MMC functionality.
- * Copyright (C) 2006-2009 Christian Kindahl
+ * Copyright (C) 2006-2011 Christian Kindahl
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
