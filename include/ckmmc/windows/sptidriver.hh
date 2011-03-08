@@ -33,42 +33,42 @@ namespace ckmmc
     /**
      * @brief SPTI driver class.
      */
-	class SptiDriver : public ScsiDriver
+    class SptiDriver : public ScsiDriver
     {
-	private:
-		enum
-		{
-			ckSPTI_DEFAULT_TIMEOUT = 60
-		};
+    private:
+        enum
+        {
+            ckSPTI_DEFAULT_TIMEOUT = 60
+        };
 
-		bool ctcm_;
-		long timeout_;
-		std::map<ckcore::tchar,HANDLE> handles_;
+        bool ctcm_;
+        long timeout_;
+        std::map<ckcore::tchar,HANDLE> handles_;
 
-		HANDLE get_handle(ScsiDevice &device);
+        HANDLE get_handle(ScsiDevice &device);
 
     public:
-		SptiDriver(bool ctcm);
+        SptiDriver(bool ctcm);
         ~SptiDriver();
 
-		static bool find_device_str(ScsiDevice::Address &addr);
+        static bool find_device_str(ScsiDevice::Address &addr);
 
-		/*
-		 * ScsiDriver Interface.
-		 */
-		bool timeout(long timeout);
+        /*
+         * ScsiDriver Interface.
+         */
+        bool timeout(long timeout);
 
-		bool scan(std::vector<ScsiDevice::Address> &addresses);
+        bool scan(std::vector<ScsiDevice::Address> &addresses);
 
-		bool transport(ScsiDevice &device,
-					   unsigned char *cdb,unsigned char cdb_len,
-					   unsigned char *data,unsigned long data_len,
-					   ScsiDevice::TransportMode mode);
+        bool transport(ScsiDevice &device,
+                       unsigned char *cdb,unsigned char cdb_len,
+                       unsigned char *data,unsigned long data_len,
+                       ScsiDevice::TransportMode mode);
 
-		bool transport_with_sense(ScsiDevice &device,
-								  unsigned char *cdb,unsigned char cdb_len,
-								  unsigned char *data,unsigned long data_len,
-								  ScsiDevice::TransportMode mode,
-								  unsigned char *sense,unsigned char &result);
+        bool transport_with_sense(ScsiDevice &device,
+                                  unsigned char *cdb,unsigned char cdb_len,
+                                  unsigned char *data,unsigned long data_len,
+                                  ScsiDevice::TransportMode mode,
+                                  unsigned char *sense,unsigned char &result);
     };
 };

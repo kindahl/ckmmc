@@ -20,20 +20,20 @@
 
 namespace ckmmc
 {
-	/**
-	 * Constructs a ScsiSilencer object.
-	 * @param [in] device The device to temporarilly silence.
-	 */
-	ScsiSilencer::ScsiSilencer(ScsiDevice &device) : device_(device)
-	{
-		device_.silence(true);
-	}
+    /**
+     * Constructs a ScsiSilencer object.
+     * @param [in] device The device to temporarilly silence.
+     */
+    ScsiSilencer::ScsiSilencer(ScsiDevice &device) : device_(device)
+    {
+        device_.silence(true);
+    }
 
-	/**
-	 * Destructs the ScsiSilencer object.
-	 */
-	ScsiSilencer::~ScsiSilencer()
-	{
-		device_.silence(false);
-	}
+    /**
+     * Destructs the ScsiSilencer object.
+     */
+    ScsiSilencer::~ScsiSilencer()
+    {
+        device_.silence(false);
+    }
 };

@@ -26,93 +26,93 @@
 
 namespace ckmmc
 {
-	class ScsiDriver;
+    class ScsiDriver;
 
-	/**
+    /**
      * @brief Class representing a SCSI device.
      */
-	class ScsiDevice
+    class ScsiDevice
     {
-	public:
-		/**
-		 * @brief Device address class.
-		 * Class representing a device address. The class contains two different sets
-		 * of data (device or bus, target and lun), only one set of data is garantied
-		 * to be valid. Which of them depends of the device implementation.
-		 */
-		class Address
-		{
-		public:
-			ckcore::tstring device_;
-			ckcore::tint32 bus_,target_,lun_;
+    public:
+        /**
+         * @brief Device address class.
+         * Class representing a device address. The class contains two different sets
+         * of data (device or bus, target and lun), only one set of data is garantied
+         * to be valid. Which of them depends of the device implementation.
+         */
+        class Address
+        {
+        public:
+            ckcore::tstring device_;
+            ckcore::tint32 bus_,target_,lun_;
 
-			/**
-			 * Constructs a default (invalid) address.
-			 */
-			Address() : bus_(-1),target_(-1),lun_(-1) {}
+            /**
+             * Constructs a default (invalid) address.
+             */
+            Address() : bus_(-1),target_(-1),lun_(-1) {}
 
-			/**
-			 * Makes this object a copy of another Address object.
-			 * @param [in] addr The address to copy from.
-			 */
-			Address(const Address &addr)
-			{
-				device_ = addr.device_;
-				bus_ = addr.bus_;
-				target_ = addr.target_;
-				lun_ = addr.lun_;
-			}
-		};
+            /**
+             * Makes this object a copy of another Address object.
+             * @param [in] addr The address to copy from.
+             */
+            Address(const Address &addr)
+            {
+                device_ = addr.device_;
+                bus_ = addr.bus_;
+                target_ = addr.target_;
+                lun_ = addr.lun_;
+            }
+        };
 
-		/**
-		 * Defines transport modes.
-		 */
-		enum TransportMode
-		{
-			ckTM_UNSPECIFIED,
-			ckTM_READ,
-			ckTM_WRITE
-		};
+        /**
+         * Defines transport modes.
+         */
+        enum TransportMode
+        {
+            ckTM_UNSPECIFIED,
+            ckTM_READ,
+            ckTM_WRITE
+        };
 
-		/**
-		 * Defines status codes.
-		 */
-		enum
-		{
-			ckSCSISTAT_GOOD = 0x00,
-			ckSCSISTAT_CHECK_CONDITION = 0x02,
-			ckSCSISTAT_CONDITION_MET = 0x04,
-			ckSCSISTAT_BUSY = 0x08,
-			ckSCSISTAT_INTERMEDIATE = 0x10,
-			ckSCSISTAT_INTERMEDIATE_COND_MET = 0x14,
-			ckSCSISTAT_RESERVATION_CONFLICT = 0x18,
-			ckSCSISTAT_COMMAND_TERMINATED = 0x22,
-			ckSCSISTAT_QUEUE_FULL = 0x28
-		};
+        /**
+         * Defines status codes.
+         */
+        enum
+        {
+            ckSCSISTAT_GOOD = 0x00,
+            ckSCSISTAT_CHECK_CONDITION = 0x02,
+            ckSCSISTAT_CONDITION_MET = 0x04,
+            ckSCSISTAT_BUSY = 0x08,
+            ckSCSISTAT_INTERMEDIATE = 0x10,
+            ckSCSISTAT_INTERMEDIATE_COND_MET = 0x14,
+            ckSCSISTAT_RESERVATION_CONFLICT = 0x18,
+            ckSCSISTAT_COMMAND_TERMINATED = 0x22,
+            ckSCSISTAT_QUEUE_FULL = 0x28
+        };
 
-	protected:
-		Address addr_;
+    protected:
+        Address addr_;
 
-	private:
-		ScsiDriver &driver_;
+    private:
+        ScsiDriver &driver_;
 
     public:
-		ScsiDevice(const Address &addr);
-		virtual ~ScsiDevice();
+        ScsiDevice(const Address &addr);
+        virtual ~ScsiDevice();
 
-		const Address &address() const;
+        const Address &address() const;
 
-		bool timeout(long timeout);
+        bool timeout(long timeout);
 
-		bool silence(bool enable);
+        bool silence(bool enable);
 
-		bool transport(unsigned char *cdb,unsigned char cdb_len,
-					   unsigned char *data,unsigned long data_len,
-					   ScsiDevice::TransportMode mode);
+        bool transport(unsigned char *cdb,unsigned char cdb_len,
+                       unsigned char *data,unsigned long data_len,
+                       ScsiDevice::TransportMode mode);
 
-		bool transport_with_sense(unsigned char *cdb,unsigned char cdb_len,
-								  unsigned char *data,unsigned long data_len,
-								  ScsiDevice::TransportMode mode,
-								  unsigned char *sense,unsigned char &result);
+        bool transport_with_sense(unsigned char *cdb,unsigned char cdb_len,
+                                  unsigned char *data,unsigned long data_len,
+                                  ScsiDevice::TransportMode mode,
+                                  unsigned char *sense,unsigned char &result);
     };
 };

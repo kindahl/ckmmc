@@ -32,14 +32,14 @@ namespace ckmmc
      */
     class Device : public MmcDevice
     {
-	public:
-		friend class CapabilitiesParser;	// The capabilities parser is allowed to
-											// modify device internals.
+    public:
+        friend class CapabilitiesParser;    // The capabilities parser is allowed to
+                                            // modify device internals.
 
-	private:
-		ckcore::tstring name_;
+    private:
+        ckcore::tstring name_;
 
-		void set_property(Property prop,ckcore::tuint32 value);
+        void set_property(Property prop,ckcore::tuint32 value);
 
     public:
         Device(Address &addr);

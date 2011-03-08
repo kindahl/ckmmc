@@ -34,59 +34,59 @@ namespace ckmmc
      */
     class DeviceManager
     {
-	public:
-		/**
-		 * @brief System device scan callback interface.
-		 */
-		class ScanCallback
-		{
-		public:
-			/**
-			 * Defines different event types.
-			 */
-			enum Status
-			{
-				ckEVENT_DEV_SCAN,		// Scanning the system bus for new devices.
-				ckEVENT_DEV_CAP			// Obtaining the capabilities of an individual device.
-			};
+    public:
+        /**
+         * @brief System device scan callback interface.
+         */
+        class ScanCallback
+        {
+        public:
+            /**
+             * Defines different event types.
+             */
+            enum Status
+            {
+                ckEVENT_DEV_SCAN,       // Scanning the system bus for new devices.
+                ckEVENT_DEV_CAP         // Obtaining the capabilities of an individual device.
+            };
 
-			/**
-			 * Called when the system scanning status has changed.
-			 * @param [in] status The new status.
-			 */
-			virtual void event_status(Status status) = 0;
+            /**
+             * Called when the system scanning status has changed.
+             * @param [in] status The new status.
+             */
+            virtual void event_status(Status status) = 0;
 
-			/**
-			 * Called when a new device has been found.
-			 * @param [in] addr Address of the added device.
-			 * @return If false is returned the device will be skipped. If true is
-			 *         returned the device manager will keep the device.
-			 */
-			virtual bool event_device(Device::Address &addr) = 0;
-		};
+            /**
+             * Called when a new device has been found.
+             * @param [in] addr Address of the added device.
+             * @return If false is returned the device will be skipped. If true is
+             *         returned the device manager will keep the device.
+             */
+            virtual bool event_device(Device::Address &addr) = 0;
+        };
 
-	private:
-		/**
-		 * Defines internal constants.
-		 */
-		enum
-		{
-			ckDM_PARSE_MAX_LINE = 1024
-		};
+    private:
+        /**
+         * Defines internal constants.
+         */
+        enum
+        {
+            ckDM_PARSE_MAX_LINE = 1024
+        };
 
-		ScsiDriver &driver_;
+        ScsiDriver &driver_;
 
-		// Vector containing all devices.
-		std::vector<Device *> devices_;
+        // Vector containing all devices.
+        std::vector<Device *> devices_;
 
-		void clear();
+        void clear();
 
     public:
         DeviceManager();
         ~DeviceManager();
 
-		bool scan(ScanCallback *callback);
+        bool scan(ScanCallback *callback);
 
-		const std::vector<Device *> &devices() const;
+        const std::vector<Device *> &devices() const;
     };
 };

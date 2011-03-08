@@ -26,13 +26,13 @@ namespace ckmmc
      * Constructs an Device object.
      */
     Device::Device(Address &addr) :
-		MmcDevice(addr)
+        MmcDevice(addr)
     {
-		name_ = vendor_;
-		name_ += ckT(" ");
-		name_ += identifier_;
-		name_ += ckT(" ");
-		name_ += revision_;
+        name_ = vendor_;
+        name_ += ckT(" ");
+        name_ += identifier_;
+        name_ += ckT(" ");
+        name_ += revision_;
     }
 
     /**
@@ -42,23 +42,23 @@ namespace ckmmc
     {
     }
 
-	/**
-	 * Sets the value of a device property.
-	 * @param [in] prop The property to update.
-	 * @param [in] value The new value of the property.
-	 */
-	void Device::set_property(Property prop,ckcore::tuint32 value)
-	{
-		if (prop < Device::ckPROP_INTERNAL_COUNT)
-			properties_[prop] = value;
-	}
+    /**
+     * Sets the value of a device property.
+     * @param [in] prop The property to update.
+     * @param [in] value The new value of the property.
+     */
+    void Device::set_property(Property prop,ckcore::tuint32 value)
+    {
+        if (prop < Device::ckPROP_INTERNAL_COUNT)
+            properties_[prop] = value;
+    }
 
-	/**
+    /**
      * Returns the full device name.
      * @return The full device name.
      */
     const ckcore::tchar *Device::name() const
-	{
-		return name_.c_str();
-	}
+    {
+        return name_.c_str();
+    }
 };

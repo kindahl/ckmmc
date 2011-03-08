@@ -30,13 +30,13 @@ namespace ckmmc
     /**
      * @brief Class for temporarilly silencing a SCSI device.
      */
-	class ScsiSilencer
+    class ScsiSilencer
     {
-	private:
-		ScsiDevice &device_;
+    private:
+        ScsiDevice &device_;
 
     public:
-		ScsiSilencer(ScsiDevice &device);
-		~ScsiSilencer();
+        ScsiSilencer(ScsiDevice &device);
+        ~ScsiSilencer();
     };
 };

@@ -28,11 +28,11 @@
 namespace ckmmc
 {
     namespace util
-	{
-		float sec_to_human_speed(ckcore::tuint32 sec_speed,
-								 Device::Profile profile);
-		ckcore::tstring sec_to_disp_speed(ckcore::tuint32 sec_speed,
-										  Device::Profile profile);
-	};
+    {
+        float sec_to_human_speed(ckcore::tuint32 sec_speed,
+                                 Device::Profile profile);
+        ckcore::tstring sec_to_disp_speed(ckcore::tuint32 sec_speed,
+                                          Device::Profile profile);
+    };
 };
 

@@ -30,15 +30,15 @@ namespace ckmmc
     /**
      * @brief Class for selecting and obtaining the SCSI driver instance.
      */
-	class ScsiDriverSelector
+    class ScsiDriverSelector
     {
-	private:
-		ScsiDriverSelector();
-		ScsiDriverSelector(const ScsiDriverSelector &obj);
-		~ScsiDriverSelector();
-		ScsiDriverSelector &operator=(const ScsiDriverSelector &rhs);
+    private:
+        ScsiDriverSelector();
+        ScsiDriverSelector(const ScsiDriverSelector &obj);
+        ~ScsiDriverSelector();
+        ScsiDriverSelector &operator=(const ScsiDriverSelector &rhs);
 
-	public:
-		static ScsiDriver &driver();
+    public:
+        static ScsiDriver &driver();
     };
 };

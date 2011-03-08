@@ -24,44 +24,44 @@
 
 namespace ckmmc
 {
-	/**
-	 * Constructs a ScsiDriverSelector object.
-	 */
-	ScsiDriverSelector::ScsiDriverSelector()
-	{
-	}
+    /**
+     * Constructs a ScsiDriverSelector object.
+     */
+    ScsiDriverSelector::ScsiDriverSelector()
+    {
+    }
 
-	/**
-	 * Destructs the ScsiDriverSelector object.
-	 */
-	ScsiDriverSelector::~ScsiDriverSelector()
-	{
-	}
+    /**
+     * Destructs the ScsiDriverSelector object.
+     */
+    ScsiDriverSelector::~ScsiDriverSelector()
+    {
+    }
 
-	/**
-	 * Returns the selected SCSI driver instance.
-	 * @return The selected SCSI driver instance.
-	 */
-	ScsiDriver& ScsiDriverSelector::driver()
-	{
+    /**
+     * Returns the selected SCSI driver instance.
+     * @return The selected SCSI driver instance.
+     */
+    ScsiDriver& ScsiDriverSelector::driver()
+    {
 #ifdef _WINDOWS
-		OSVERSIONINFO osvi;
-		memset(&osvi,0,sizeof(OSVERSIONINFO));
-		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+        OSVERSIONINFO osvi;
+        memset(&osvi,0,sizeof(OSVERSIONINFO));
+        osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 
-		// Use SPTI on Windows 2000 and newer.
-		GetVersionEx(&osvi);
-		if (osvi.dwPlatformId == VER_PLATFORM_WIN32_NT && osvi.dwMajorVersion > 4)
-		{
-			// Use cdrtools compatibility mode.
-			static SptiDriver driver(true);
-			return driver;
-		}
-		else
-		{
-			static AspiDriver driver;
-			return driver;
-		}
+        // Use SPTI on Windows 2000 and newer.
+        GetVersionEx(&osvi);
+        if (osvi.dwPlatformId == VER_PLATFORM_WIN32_NT && osvi.dwMajorVersion > 4)
+        {
+            // Use cdrtools compatibility mode.
+            static SptiDriver driver(true);
+            return driver;
+        }
+        else
+        {
+            static AspiDriver driver;
+            return driver;
+        }
 #endif
-	}
+    }
 };

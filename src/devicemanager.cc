@@ -26,8 +26,8 @@ namespace ckmmc
     /**
      * Constructs an DeviceManager object.
      */
-	DeviceManager::DeviceManager() :
-		driver_(ScsiDriverSelector::driver())
+    DeviceManager::DeviceManager() :
+        driver_(ScsiDriverSelector::driver())
     {
     }
 
@@ -36,80 +36,80 @@ namespace ckmmc
      */
     DeviceManager::~DeviceManager()
     {
-		clear();
+        clear();
     }
 
-	/**
-	 * Clear the list of known devices.
-	 */
-	void DeviceManager::clear()
-	{
-		// Free all allocated devices.
-		std::vector<Device *>::iterator it;
-		for (it = devices_.begin(); it != devices_.end(); it++)
-			delete *it;
+    /**
+     * Clear the list of known devices.
+     */
+    void DeviceManager::clear()
+    {
+        // Free all allocated devices.
+        std::vector<Device *>::iterator it;
+        for (it = devices_.begin(); it != devices_.end(); it++)
+            delete *it;
 
-		devices_.clear();
-	}
+        devices_.clear();
+    }
 
-	/**
-	 * Scans the system for devices.
-	 * @param [in] callback Optional pointer to a callback object that will be
-	 *                      notified how the scanning progresses.
-	 * @return If successfull true is returned, otherwise false is returned.
-	 */
-	bool DeviceManager::scan(ScanCallback *callback)
-	{
-		// Remove any previous devices.
-		clear();
+    /**
+     * Scans the system for devices.
+     * @param [in] callback Optional pointer to a callback object that will be
+     *                      notified how the scanning progresses.
+     * @return If successfull true is returned, otherwise false is returned.
+     */
+    bool DeviceManager::scan(ScanCallback *callback)
+    {
+        // Remove any previous devices.
+        clear();
 
-		if (callback != NULL)
-			callback->event_status(ScanCallback::ckEVENT_DEV_SCAN);
+        if (callback != NULL)
+            callback->event_status(ScanCallback::ckEVENT_DEV_SCAN);
 
-		// Scan system for devices.
-		std::vector<ScsiDevice::Address> addresses;
-		if (!driver_.scan(addresses))
-			return false;
+        // Scan system for devices.
+        std::vector<ScsiDevice::Address> addresses;
+        if (!driver_.scan(addresses))
+            return false;
 
-		// Add all devices.
-		std::vector<ScsiDevice::Address>::iterator it_addr;
-		for (it_addr = addresses.begin(); it_addr != addresses.end(); it_addr++)
-		{
-			devices_.push_back(new Device(*it_addr));
+        // Add all devices.
+        std::vector<ScsiDevice::Address>::iterator it_addr;
+        for (it_addr = addresses.begin(); it_addr != addresses.end(); it_addr++)
+        {
+            devices_.push_back(new Device(*it_addr));
 
-			if (callback != NULL)
-			{
-				// See if we should keep the device.
-				if (!callback->event_device(*it_addr))
-				{
-					delete devices_.back();
-					devices_.pop_back();
-				}
-			}
-		}
+            if (callback != NULL)
+            {
+                // See if we should keep the device.
+                if (!callback->event_device(*it_addr))
+                {
+                    delete devices_.back();
+                    devices_.pop_back();
+                }
+            }
+        }
 
-		if (callback != NULL)
-			callback->event_status(ScanCallback::ckEVENT_DEV_CAP);
+        if (callback != NULL)
+            callback->event_status(ScanCallback::ckEVENT_DEV_CAP);
 
-		// Refresh the devices.
-		std::vector<Device *>::iterator it;
-		for (it = devices_.begin(); it != devices_.end(); it++)
-		{
-			if (!(*it)->refresh())
-			{
-				ckcore::log::print_line(ckT("[device]: unable to refresh device capabilities."));
-			}
-		}
+        // Refresh the devices.
+        std::vector<Device *>::iterator it;
+        for (it = devices_.begin(); it != devices_.end(); it++)
+        {
+            if (!(*it)->refresh())
+            {
+                ckcore::log::print_line(ckT("[device]: unable to refresh device capabilities."));
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * Returns a vector containing all known devices.
-	 * @return A vector containing all known devices.
-	 */
-	const std::vector<Device *> &DeviceManager::devices() const
-	{
-		return devices_;
-	}
+    /**
+     * Returns a vector containing all known devices.
+     * @return A vector containing all known devices.
+     */
+    const std::vector<Device *> &DeviceManager::devices() const
+    {
+        return devices_;
+    }
 };
