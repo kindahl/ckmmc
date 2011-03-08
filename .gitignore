@@ -1,0 +1,6 @@
+/lib/*
+/lib64/*
+/obj/*
+*.ncb
+*.suo
+/src/windows/*.vcproj.*.user
