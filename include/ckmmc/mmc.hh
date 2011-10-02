@@ -26,6 +26,10 @@
 #include <ckcore/types.hh>
 #include "ckmmc/device.hh"
 
+#define CK_MMC_KB_1X_SPEED_CD       176
+#define CK_MMC_KB_1X_SPEED_DVD      1385
+#define CK_MMC_KB_1X_SPEED_BD       4495
+
 namespace ckmmc
 {
     ckcore::tuint16 read_uint16_msbf(unsigned char *buffer);

@@ -107,7 +107,7 @@ namespace ckmmc
 
     /**
      * Obtains the supported read speeds of the inserted medium.
-     * @param [out] speeds List of read speeds measured in sectors per second.
+     * @param [out] speeds List of read speeds measured in kilo bytes per second.
      * @return If successful true is returned, if unsuccessful false is returend.
      */
     const std::vector<ckcore::tuint32> &MmcDevice::read_speeds()
@@ -117,7 +117,7 @@ namespace ckmmc
 
     /**
      * Obtains the supported write speeds of the inserted medium.
-     * @param [out] speeds List of write speeds measured in sectors per second.
+     * @param [out] speeds List of write speeds measured in kilo bytes per second.
      * @return If successful true is returned, if unsuccessful false is returend.
      */
     const std::vector<ckcore::tuint32> &MmcDevice::write_speeds()
@@ -329,20 +329,20 @@ namespace ckmmc
         properties_[ckPROP_LOAD_MECHANISM] = static_cast<Device::LoadMechanism>(mode_page_2a.load_mechanism_);
         properties_[ckPROP_ROT_CTRL] = static_cast<Device::RotCtrl>(mode_page_2a.rot_ctrl_);
         properties_[ckPROP_DA_BLOCK_LEN] = static_cast<Device::AudioBlockLen>(mode_page_2a.length_);
-        properties_[ckPROP_MAX_READ_SPD] = mode_page_2a.max_read_spd_ * 1000 / 2352;
-        properties_[ckPROP_CUR_READ_SPD] = mode_page_2a.cur_read_spd_ * 1000 / 2352;
-        properties_[ckPROP_MAX_WRITE_SPD] = mode_page_2a.max_write_spd_ * 1000 / 2352;
-        properties_[ckPROP_CUR_WRITE_SPD] = mode_page_2a.cur_write_spd_ * 1000 / 2352;
+        properties_[ckPROP_MAX_READ_SPD] = mode_page_2a.max_read_spd_;
+        properties_[ckPROP_CUR_READ_SPD] = mode_page_2a.cur_read_spd_;
+        properties_[ckPROP_MAX_WRITE_SPD] = mode_page_2a.max_write_spd_;
+        properties_[ckPROP_CUR_WRITE_SPD] = mode_page_2a.cur_write_spd_;
 
         // Setup read speeds.
         read_speeds_.clear();
 
-        double ext_speed = static_cast<double>(property(ckPROP_MAX_READ_SPD))/75;
+        double ext_speed = static_cast<double>(property(ckPROP_MAX_READ_SPD))/CK_MMC_KB_1X_SPEED_CD;
         ckcore::tuint32 cur_speed = static_cast<ckcore::tuint32>(ext_speed + 0.5);
 
         while (cur_speed > 0)
         {
-            read_speeds_.push_back(cur_speed*75);
+            read_speeds_.push_back(cur_speed * CK_MMC_KB_1X_SPEED_CD);
             cur_speed >>= 1;
         }
 
@@ -351,20 +351,64 @@ namespace ckmmc
         {
             write_speeds_.clear();
 
-            // Try to obtain the actual write speeds of any medium that is present.
-            std::vector<ckcore::tuint16>::iterator it;
-            for (it = mode_page_2a.write_spds_.begin(); it != mode_page_2a.write_spds_.end(); it++)
-                write_speeds_.push_back(static_cast<ckcore::tuint32>(*it) * 1000 / 2352);
+            unsigned char buffer[8 + 16];
 
-            // If no medium is present, calculate guessed write speeds (based on known maximum)b.
+            // GET PERFORMANCE.
+            unsigned char cdb[16];
+            memset(cdb,0,sizeof(cdb));
+            cdb[ 0] = ckCMD_GET_PERFORMANCE;
+            cdb[ 9] = 1;   // Start with one descriptor.
+            cdb[10] = 0x3; // Ask for "Write Speed Descriptor".
+            cdb[11] = 0;
+
+            if (!transport(cdb,12,buffer,sizeof(buffer),ScsiDevice::ckTM_READ))
+            {
+                ckcore::log::print_line(ckT("[mmcdevice]: warning: GET PERFORMANCE stage 1 failed."));
+
+                std::vector<ckcore::tuint16>::iterator it;
+                for (it = mode_page_2a.write_spds_.begin(); it != mode_page_2a.write_spds_.end(); it++)
+                    write_speeds_.push_back(static_cast<ckcore::tuint32>(*it));
+
+                return false;
+            }
+
+            unsigned int tot_data_len = (buffer[0] << 24 | buffer[1] << 16 |
+                                         buffer[2] <<  8 | buffer[3]) + 4;  // Performance data header + performance descriptors.
+            unsigned int num_write_desc = (tot_data_len - 8) / 16;
+
+            std::vector<unsigned char> buffer2(tot_data_len,' ');
+
+            memset(cdb,0,sizeof(cdb));
+            cdb[ 0] = ckCMD_GET_PERFORMANCE;
+            cdb[ 8] = num_write_desc >> 8;
+            cdb[ 9] = num_write_desc;   // Real number of descriptors.
+            cdb[10] = 0x3;              // Ask for "Write Speed Descriptor".
+            cdb[11] = 0;
+
+            if (!transport(cdb,12,&buffer2[0],tot_data_len,ScsiDevice::ckTM_READ))
+            {
+                ckcore::log::print_line(ckT("[mmcdevice]: warning: GET PERFORMANCE stage 2 failed."));
+
+                std::vector<ckcore::tuint16>::iterator it;
+                for (it = mode_page_2a.write_spds_.begin(); it != mode_page_2a.write_spds_.end(); it++)
+                    write_speeds_.push_back(static_cast<ckcore::tuint32>(*it));
+
+                return false;
+            }
+
+            unsigned char *p = &buffer2[0];
+            for (p += 8; num_write_desc; p += 16,num_write_desc--)
+                write_speeds_.push_back(p[12] << 24 | p[13] << 16 | p[14] << 8 | p[15]);
+
+            // If no medium is present, calculate guessed write speeds (based on known maximum).
             if (write_speeds_.empty())
             {
-                double ext_speed = static_cast<double>(property(ckPROP_MAX_WRITE_SPD))/75;
+                double ext_speed = static_cast<double>(property(ckPROP_MAX_WRITE_SPD))/CK_MMC_KB_1X_SPEED_CD;
                 ckcore::tuint32 cur_speed = static_cast<ckcore::tuint32>(ext_speed + 0.5);
 
                 while (cur_speed > 0)
                 {
-                    write_speeds_.push_back(cur_speed*75);
+                    write_speeds_.push_back(cur_speed * CK_MMC_KB_1X_SPEED_CD);
                     cur_speed >>= 1;
                 }
             }

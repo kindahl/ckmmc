@@ -249,8 +249,8 @@ namespace ckmmc
         ckcore::tuint64 features_;
         ckcore::tuint32 properties_[ckPROP_INTERNAL_COUNT];
 
-        std::vector<ckcore::tuint32> read_speeds_;  // Used for caching read speeds.
-        std::vector<ckcore::tuint32> write_speeds_; // Used for caching write speeds.
+        std::vector<ckcore::tuint32> read_speeds_;  // Used for caching read speeds (kB/s).
+        std::vector<ckcore::tuint32> write_speeds_; // Used for caching write speeds (kB/s).
 
         bool is_yamaha() const;
         bool is_plextor() const;
