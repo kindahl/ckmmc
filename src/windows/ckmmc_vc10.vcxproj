@@ -106,6 +106,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <ProgramDataBaseFileName>..\..\lib\$(TargetName)-vc$(PlatformToolsetVersion)</ProgramDataBaseFileName>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>ckcored.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -127,6 +128,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ProgramDataBaseFileName>..\..\lib64\$(TargetName)-vc$(PlatformToolsetVersion)</ProgramDataBaseFileName>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>ckcored.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -141,6 +143,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ProgramDataBaseFileName>..\..\lib\$(TargetName)-vc$(PlatformToolsetVersion)</ProgramDataBaseFileName>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>ckcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -159,6 +162,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ProgramDataBaseFileName>..\..\lib64\$(TargetName)-vc$(PlatformToolsetVersion)</ProgramDataBaseFileName>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>ckcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
